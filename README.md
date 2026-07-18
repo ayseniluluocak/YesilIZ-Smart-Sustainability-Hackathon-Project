@@ -19,3 +19,6 @@ YeşilIZ is an end-to-end smart platform where citizens can report environmental
 
 # Project Status
 This repository contains the conceptual design, business model, and system architecture of the project, developed in a limited time during the **GDG Bursa 2026 Hackathon**. You can access the detailed presentation file from within the repository.
+
+# Participation Certificate
+* Participation Certificate was added [GDG Bursa 2026 Katılım Belgesi](GDG-Bursa-2026-Katilim-Belgesi.jpg)

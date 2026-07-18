@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YeşilİZ — saha raporu demosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%232F4B3C'/%3E%3Cpath d='M20 7C12 7 7 13 7 20.5c0 5 3 9.2 7.3 11 1-6.4 4-11.8 8.4-15.8 2.6-2.5 5.3-4.2 8-5.3-2.7 7.2-8 12.6-14.3 15.2 1.7 1 4 1.6 6.3 1.6 7.7 0 12.9-6 12.9-13.7C35.9 9.6 28.8 7 20 7Z' fill='%23F8FAF5'/%3E%3Ccircle cx='14.5' cy='27' r='2' fill='%23A6402E'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --paper:#EDF1EA;
+    --paper-card:#F8FAF5;
+    --ink:#1C2A20;
+    --ink-soft:#4B5B4F;
+    --line:#C4CDBD;
+    --forest:#2F4B3C;
+    --forest-dark:#1F3629;
+    --stamp:#A6402E;
+    --stamp-soft:#F3E1DB;
+    --mustard:#C1892A;
+    --mustard-soft:#F3E7CE;
+    --sage:#5C7A63;
+    --sage-soft:#E3EBDF;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.028) 0px, rgba(0,0,0,0.028) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.028) 0px, rgba(0,0,0,0.028) 1px, transparent 1px, transparent 32px);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    margin:0;
+    color:var(--forest-dark);
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--stamp);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:18px;height:1px;
+    background:var(--stamp);
+    display:inline-block;
+  }
+  a{ color:inherit; }
+  button{ font-family:inherit; cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--forest); outline-offset:2px; }
+
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 28px; }
+
+  header.site{
+    position:sticky; top:0; z-index:20;
+    background:rgba(237,241,234,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding:16px 0; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{ width:30px; height:30px; border-radius:6px; background:var(--forest); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .brand-name{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:17px; }
+  .nav-links{ display:flex; gap:26px; font-size:14px; color:var(--ink-soft); }
+  .nav-links a:hover{ color:var(--forest-dark); }
+  .btn{ border-radius:var(--radius); padding:10px 18px; font-size:14px; font-weight:500; border:1px solid var(--forest); background:transparent; color:var(--forest-dark); transition:transform 0.15s ease, background 0.15s ease; }
+  .btn:hover{ background:var(--sage-soft); }
+  .btn:active{ transform:scale(0.97); }
+  .btn.primary{ background:var(--forest); color:#fff; border-color:var(--forest); }
+  .btn.primary:hover{ background:var(--forest-dark); }
+  .btn.small{ padding:7px 12px; font-size:12.5px; }
+  .nav-actions{ display:flex; gap:10px; }
+  @media (max-width:760px){ .nav-links{ display:none; } }
+
+  .hero{ padding:76px 0 48px; }
+  .hero-grid{ display:grid; grid-template-columns:1.15fr 0.85fr; gap:48px; align-items:start; }
+  .hero h1{ font-size:42px; line-height:1.14; margin:14px 0 18px; }
+  .hero p.lead{ font-size:16.5px; color:var(--ink-soft); max-width:480px; margin:0 0 26px; }
+  .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+  .case-tag{ display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft); border:1px solid var(--line); background:var(--paper-card); border-radius:6px; padding:6px 10px; margin-top:22px; }
+  .stamp-graphic{ width:118px; height:118px; border-radius:50%; border:2.5px dashed var(--stamp); color:var(--stamp); display:flex; align-items:center; justify-content:center; text-align:center; transform:rotate(-9deg); font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.06em; font-weight:600; margin:0 auto; }
+  .hero-side{ background:var(--paper-card); border:1px solid var(--line); border-radius:16px; padding:26px 22px; }
+  .hero-side .row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed var(--line); font-size:13.5px; }
+  .hero-side .row:last-child{ border-bottom:none; }
+  .hero-side .row span:first-child{ color:var(--ink-soft); }
+  .hero-side .row span:last-child{ font-family:'IBM Plex Mono', monospace; font-weight:500; }
+
+  section{ padding:56px 0; }
+  section.bordered{ border-top:1px solid var(--line); }
+  .section-head{ margin-bottom:34px; max-width:620px; }
+  .section-head h2{ font-size:28px; margin-top:10px; }
+  .section-head p{ color:var(--ink-soft); margin-top:10px; font-size:15px; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .stat-card{ background:var(--paper-card); border:1px solid var(--line); border-radius:14px; padding:20px; }
+  .stat-card i{ font-size:20px; color:var(--forest); }
+  .stat-card h3{ font-size:15px; margin:12px 0 6px; color:var(--ink); }
+  .stat-card p{ font-size:13.5px; color:var(--ink-soft); margin:0; }
+  @media (max-width:760px){ .stat-grid{ grid-template-columns:1fr; } .hero-grid{ grid-template-columns:1fr; } }
+
+  .demo-shell{ display:grid; grid-template-columns:230px 1fr; gap:36px; background:var(--paper-card); border:1px solid var(--line); border-radius:18px; padding:30px; }
+  .tab-list{ display:flex; flex-direction:column; gap:8px; }
+  .tab-btn{ text-align:left; background:transparent; border:1px solid transparent; border-radius:8px; padding:12px 12px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center; gap:10px; }
+  .tab-btn .num{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--sage); }
+  .tab-btn:hover{ background:var(--sage-soft); }
+  .tab-btn.active{ background:var(--forest); color:#fff; }
+  .tab-btn.active .num{ color:#cfe0d4; }
+  .tab-note{ margin-top:16px; font-size:12px; color:var(--ink-soft); border-top:1px dashed var(--line); padding-top:14px; }
+
+  .phone-stage{ display:flex; justify-content:center; }
+  .phone{ width:302px; background:var(--forest-dark); border-radius:34px; padding:12px; box-shadow: 0 18px 40px rgba(20,30,22,0.16); }
+  .phone-screen{ background:#fff; border-radius:24px; overflow:hidden; height:580px; display:flex; flex-direction:column; position:relative; }
+  .status-bar{ display:flex; justify-content:space-between; padding:10px 18px 4px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); flex-shrink:0; }
+  .screen{ display:none; flex-direction:column; flex:1; padding:6px 18px 14px; animation:fade 0.25s ease; overflow-y:auto; min-height:0; }
+  .screen.active{ display:flex; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:translateY(0);} }
+
+  .login-body{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; flex:1; padding-top:30px; }
+  .app-icon{ width:52px; height:52px; border-radius:14px; background:var(--sage-soft); color:var(--forest); display:flex; align-items:center; justify-content:center; font-size:24px; }
+  .login-body h3{ font-size:17px; }
+  .login-body p{ font-size:12.5px; color:var(--ink-soft); margin:0; max-width:210px; }
+  .egov-btn{ width:100%; margin-top:8px; background:var(--forest); color:#fff; border:none; border-radius:8px; padding:11px; font-size:13.5px; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .egov-btn:hover{ background:var(--forest-dark); }
+  .kvkk-note{ font-size:10.5px; color:var(--ink-soft); margin-top:6px; }
+  .partner-line{ margin-top:auto; padding-top:14px; border-top:1px dashed var(--line); font-size:10px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; justify-content:center; }
+
+  .seg-group{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:8px 0 12px; flex-shrink:0; }
+  .seg-btn{ flex:1; background:#fff; border:none; padding:8px 4px; font-size:11px; color:var(--ink-soft); }
+  .seg-btn.active{ background:var(--forest); color:#fff; }
+
+  .feed-head{ display:flex; justify-content:space-between; align-items:center; padding:8px 0 0; flex-shrink:0; }
+  .feed-head h3{ font-size:15px; }
+  .pill{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; padding:4px 9px; border-radius:20px; }
+  .pill.warn{ background:var(--mustard-soft); color:#7a5417; }
+  .pill.ok{ background:var(--sage-soft); color:#2c4a33; }
+  .pill.bad{ background:var(--stamp-soft); color:var(--stamp); }
+  .map-box{ background:var(--sage-soft); border-radius:12px; height:150px; position:relative; margin:0 0 10px; border:1px solid var(--line); flex-shrink:0; }
+  .pin-mark{ position:absolute; width:24px; height:24px; margin-left:-12px; margin-top:-12px; border-radius:50%; background:var(--stamp); color:#fff; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-size:13px; box-shadow:0 1px 4px rgba(0,0,0,0.28); padding:0; }
+  .pin-mark:hover{ background:#8a3323; }
+  .pin-mark.selected{ background:var(--forest); }
+  .pin-detail{ background:var(--paper-card); border:1px dashed var(--line); border-radius:10px; padding:10px 12px; font-size:11.5px; color:var(--ink-soft); margin-bottom:10px; flex-shrink:0; }
+  .pin-detail .pd-title{ font-size:12.5px; font-weight:500; color:var(--ink); margin:2px 0 2px; }
+  .pin-detail .pd-tag{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--forest); }
+  .feed-list-label{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em; margin:2px 0 4px; flex-shrink:0; }
+  .feed-item{ display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px dashed var(--line); flex-shrink:0; }
+  .feed-item:last-child{ border-bottom:none; }
+  .feed-item i{ font-size:16px; margin-top:2px; }
+  .feed-item .title{ font-size:12.5px; font-weight:500; margin:0; }
+  .feed-item .meta{ font-size:11px; color:var(--ink-soft); margin:1px 0 0; font-family:'IBM Plex Mono', monospace; }
+
+  .other-area{ display:flex; flex-direction:column; gap:10px; }
+  .other-area input[type=text]{ width:100%; border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:12.5px; font-family:'IBM Plex Mono', monospace; }
+  .other-area .hint{ font-size:11.5px; color:var(--ink-soft); margin:0; }
+  .other-preview{ background:var(--sage-soft); border-radius:10px; padding:12px; font-size:12px; color:#2c4a33; display:none; }
+  .other-preview.show{ display:block; }
+  .other-preview .mono{ font-size:10.5px; display:block; margin-top:4px; }
+
+  .tabbar{ margin-top:auto; display:flex; justify-content:space-around; padding-top:10px; border-top:1px solid var(--line); flex-shrink:0; }
+  .tabbar button{ background:none; border:none; padding:4px; }
+  .tabbar i{ font-size:18px; color:var(--ink-soft); }
+  .tabbar i.on{ color:var(--forest); }
+
+  .field-label{ font-size:11px; color:var(--ink-soft); margin:10px 0 6px; text-transform:uppercase; letter-spacing:0.05em; font-family:'IBM Plex Mono', monospace; flex-shrink:0; }
+  .dropzone{ border:1.5px dashed var(--line); border-radius:12px; height:84px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:var(--ink-soft); font-size:11.5px; margin:6px 0 4px; flex-shrink:0; }
+  .dropzone i{ font-size:20px; }
+
+  .cat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:8px; }
+  .cat-tile{ position:relative; aspect-ratio:240/311; border:1px solid var(--line); border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:0; }
+  .cat-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .cat-tile.selected{ border-color:var(--forest); box-shadow:0 0 0 2px var(--forest); }
+  .cat-tile.selected::after{ content:"\2713"; position:absolute; top:3px; right:3px; width:15px; height:15px; border-radius:50%; background:var(--forest); color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; line-height:1; }
+  .cat-tile.ai-tile{ grid-column:span 4; aspect-ratio:auto; flex-direction:row; gap:8px; padding:9px; justify-content:center; border-style:dashed; font-size:11.5px; color:var(--ink-soft); }
+  .cat-tile.ai-tile.selected{ background:var(--mustard); border-color:var(--mustard); color:#fff; box-shadow:none; }
+  .cat-tile.ai-tile.selected::after{ content:none; }
+  .cat-tile.ai-tile i{ font-size:16px; }
+  .cat-info{ background:var(--paper-card); border:1px dashed var(--line); border-radius:10px; padding:10px 12px; font-size:11.5px; color:var(--ink-soft); margin-bottom:10px; flex-shrink:0; min-height:52px; }
+  .cat-info .ci-title{ font-size:12.5px; font-weight:500; color:var(--ink); margin:0 0 3px; }
+
+  .loc-row{ display:flex; align-items:center; gap:6px; font-size:12px; margin-bottom:4px; flex-shrink:0; }
+  .loc-row i{ color:var(--forest); }
+  input.loc-input{ width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 9px; font-size:12px; font-family:'IBM Plex Mono', monospace; margin-bottom:4px; }
+  textarea.note{ width:100%; border:1px solid var(--line); border-radius:8px; padding:8px; font-size:12px; font-family:inherit; resize:none; height:44px; margin-top:8px; flex-shrink:0; }
+  .reward-note{ font-size:10.5px; color:var(--ink-soft); margin:8px 0 0; flex-shrink:0; }
+  .submit-btn{ width:100%; margin-top:10px; background:var(--stamp); color:#fff; border:none; border-radius:8px; padding:11px; font-size:13.5px; flex-shrink:0; }
+  .submit-btn:disabled{ background:var(--line); color:#fff; cursor:default; }
+  .quota-note{ font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:8px; font-family:'IBM Plex Mono', monospace; flex-shrink:0; }
+
+  .stamp-overlay{ position:absolute; inset:0; background:rgba(255,255,255,0.95); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s ease; }
+  .stamp-overlay.show{ opacity:1; pointer-events:auto; }
+  .stamp-mark{ border:3px solid var(--stamp); color:var(--stamp); border-radius:50%; width:168px; height:168px; display:flex; align-items:center; justify-content:center; text-align:center; font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; transform:rotate(-8deg) scale(0.7); transition:transform 0.35s cubic-bezier(.34,1.56,.64,1); letter-spacing:0.03em; padding:10px; line-height:1.4; }
+  .stamp-overlay.show .stamp-mark{ transform:rotate(-8deg) scale(1); }
+  .stamp-mark .stamp-sub{ font-size:9.5px; font-weight:400; display:block; margin-top:4px; }
+
+  .hist-item{ border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px; flex-shrink:0; }
+  .hist-item .hi-top{ display:flex; justify-content:space-between; align-items:center; }
+  .hist-item .hi-date{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--ink-soft); }
+  .hist-item .hi-title{ font-size:12.5px; font-weight:500; margin:4px 0 2px; }
+  .hist-item .hi-tag{ font-size:11px; color:var(--ink-soft); }
+  .hist-item .hi-reward{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--forest); margin-top:4px; }
+
+  .balance-card{ background:var(--sage-soft); border-radius:12px; padding:14px 16px; margin:8px 0 12px; flex-shrink:0; }
+  .balance-card .label{ font-size:11px; color:#3c5741; font-family:'IBM Plex Mono', monospace; }
+  .balance-card .amount{ font-size:24px; font-weight:600; color:var(--forest-dark); margin-top:2px; font-family:'Space Grotesk', sans-serif; }
+  .balance-card .pending{ font-size:11px; color:#5c7a63; margin-top:6px; padding-top:6px; border-top:1px dashed rgba(60,87,65,0.25); font-family:'IBM Plex Mono', monospace; }
+  .ledger-item{ display:flex; gap:9px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line); flex-shrink:0; }
+  .ledger-item:last-child{ border-bottom:none; }
+  .ledger-item i{ font-size:16px; }
+  .ledger-item .t{ font-size:12px; font-weight:500; margin:0; }
+  .ledger-item .s{ font-size:10.5px; color:var(--ink-soft); margin:0; font-family:'IBM Plex Mono', monospace; }
+
+  .steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .step-card{ background:var(--paper-card); border:1px solid var(--line); border-radius:14px; padding:20px; position:relative; }
+  .step-num{ font-family:'IBM Plex Mono', monospace; color:var(--stamp); font-size:12px; }
+  .step-card h3{ font-size:15px; margin:10px 0 6px; }
+  .step-card p{ font-size:13px; color:var(--ink-soft); margin:0; }
+  @media (max-width:900px){ .steps{ grid-template-columns:1fr 1fr; } .demo-shell{ grid-template-columns:1fr; } .tab-list{ flex-direction:row; overflow-x:auto; } }
+  @media (max-width:560px){ .steps{ grid-template-columns:1fr; } }
+
+  .brand-mark svg{ width:18px; height:18px; display:block; }
+  .app-icon svg{ width:26px; height:26px; display:block; }
+
+  .sdg-strip{ display:flex; flex-wrap:wrap; gap:8px; }
+  .sdg-chip{ width:76px; border-radius:8px; overflow:hidden; border:1px solid var(--line); background:#fff; flex-shrink:0; }
+  .sdg-chip img{ width:100%; display:block; }
+  .sdg-note{ font-size:12px; color:var(--ink-soft); margin-top:14px; line-height:1.6; }
+  .sdg-note a{ color:var(--forest-dark); text-decoration:underline; }
+
+  .map-box{ overflow:hidden; }
+  .map-bg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+  .other-preview.show{ display:flex; flex-direction:column; gap:4px; }
+  .gps-btn{ display:flex; align-items:center; justify-content:center; gap:7px; }
+  .gps-btn i{ font-size:14px; }
+  .gps-spin{ animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .btn[disabled]{ opacity:0.45; pointer-events:none; }
+  .loc-row.result{ background:var(--sage-soft); border-radius:8px; padding:8px 9px; margin-bottom:4px; }
+
+  .seg-note{ font-size:10.5px; color:var(--ink-soft); margin:2px 0 8px; flex-shrink:0; }
+
+  .safe-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .safe-card{ border:1px solid var(--line); border-radius:14px; padding:20px; background:var(--paper-card); }
+  .safe-card .head{ display:flex; align-items:center; gap:10px; }
+  .safe-card .head i{ font-size:18px; color:var(--forest); background:var(--sage-soft); width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+  .safe-card h3{ font-size:15px; }
+  .safe-card p{ font-size:13px; color:var(--ink-soft); margin:10px 0 0; }
+  @media (max-width:700px){ .safe-grid{ grid-template-columns:1fr; } }
+
+  footer{ border-top:1px solid var(--line); padding:30px 0; }
+  .foot-row{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; align-items:center; font-size:12.5px; color:var(--ink-soft); }
+  .foot-row .mono{ font-size:11px; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 7C12 7 7 13 7 20.5c0 5 3 9.2 7.3 11 1-6.4 4-11.8 8.4-15.8 2.6-2.5 5.3-4.2 8-5.3-2.7 7.2-8 12.6-14.3 15.2 1.7 1 4 1.6 6.3 1.6 7.7 0 12.9-6 12.9-13.7C35.9 9.6 28.8 7 20 7Z" fill="#fff"/>
+          <circle cx="14.5" cy="27" r="2" fill="var(--stamp)"/>
+        </svg>
+      </div>
+      <span class="brand-name">YeşilİZ</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#hedefler">17 Hedef</a>
+      <a href="#sorun">Sorun</a>
+      <a href="#demo">Demo</a>
+      <a href="#nasil-calisir">Nasıl çalışır</a>
+      <a href="#guvenlik">Güvenlik</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn primary small" onclick="document.getElementById('demo').scrollIntoView()">Demoyu dene</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Saha Raporu · Sürdürülebilirlik</span>
+      <h1>Mahallende gördüğün sorunu bir dosyaya, dosyayı bir çözüme çevir.</h1>
+      <p class="lead">YeşilİZ, sürdürülebilir kalkınma hedefleriyle çelişen durumları vatandaştan alır, yapay zekayla ön inceler, belediye ve bakanlıkla paylaşır — çözüldüğünde ihbar edeni de çözeni de ödüllendirir.</p>
+      <div class="hero-actions">
+        <button class="btn primary" onclick="document.getElementById('demo').scrollIntoView()">Demoyu incele</button>
+        <button class="btn" onclick="document.getElementById('nasil-calisir').scrollIntoView()">Nasıl çalışır</button>
+      </div>
+      <div class="case-tag"><i class="ti ti-file-text" aria-hidden="true"></i> DOSYA NO 2026-BUR-0412 · </div>
+    </div>
+    <div class="hero-side">
+      <div class="stamp-graphic">DOĞRULANDI<br>17 HEDEF</div>
+      <div class="row"><span>Doğrulama</span><span>e-Devlet</span></div>
+      <div class="row"><span>Kategori</span><span>17 SKA + AI</span></div>
+      <div class="row"><span>Ödül aralığı</span><span>₺1 – ₺50</span></div>
+      <div class="row"><span>Nihai onay</span><span>belediye / bakanlık</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="hedefler" class="bordered">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">17 hedef</span>
+      <h2>Her ihbar, 17 hedeften biriyle etiketlenir.</h2>
+      <p>Her ihbar, Birleşmiş Milletler'in resmi 17 Sürdürülebilir Kalkınma Hedefi ikonlarından biriyle sınıflandırılır.</p>
+    </div>
+    <div class="sdg-strip" id="sdgStrip"></div>
+    <p class="sdg-note">SKH logosu ve 17 ikon, Birleşmiş Milletler'in <a href="https://www.un.org/sustainabledevelopment" target="_blank" rel="noopener">www.un.org/sustainabledevelopment</a> adresinde yayımladığı <a href="https://www.un.org/sustainabledevelopment/news/communications-material/" target="_blank" rel="noopener">kullanım kılavuzuna</a> uygun olarak, değiştirilmeden kullanılmıştır. Bu yayının içeriği Birleşmiş Milletler tarafından onaylanmamıştır ve Birleşmiş Milletler'in ya da yetkililerinin veya üye devletlerinin görüşlerini yansıtmamaktadır.</p>
+  </div>
+</section>
+
+<section id="sorun" class="bordered">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">sorun</span>
+      <h2>Yerel sorunlar, resmi kanala çoğu zaman ulaşmıyor.</h2>
+      <p>Vatandaşın gördüğü bir çöp sahası, kaçak su ya da kesilen ağaç; ilgili birime düzgün biçimde, konumuyla ve kanıtıyla ulaşmadığında kaybolur. YeşilİZ bu boşluğu, doğrulanabilir ve teşvik edilen bir bildirim akışıyla kapatır.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <i class="ti ti-target-arrow" aria-hidden="true"></i>
+        <h3>17 hedefe göre sınıflandırma</h3>
+        <p>Her ihbar, sürdürülebilir kalkınma hedeflerinden biriyle etiketlenir; emin olunamazsa yapay zeka en uygun hedefi kendisi seçer.</p>
+      </div>
+      <div class="stat-card">
+        <i class="ti ti-shield-check" aria-hidden="true"></i>
+        <h3>İki katmanlı doğrulama</h3>
+        <p>Yapay zeka hem içeriği hem kategori uygunluğunu kontrol eder; ödül miktarını işin büyüklüğüne göre belirler.</p>
+      </div>
+      <div class="stat-card">
+        <i class="ti ti-lock" aria-hidden="true"></i>
+        <h3>Kimlik, veri değil token</h3>
+        <p>e-Devlet girişiyle kişi doğrulanır; T.C. kimlik numarası uygulama veritabanında tutulmaz.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="bordered">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">canlı arayüz denemesi</span>
+      <h2>Beş ekranlık akışı kendin dene.</h2>
+      <p>Soldaki sekmelerden ilerleyerek girişten geçmişe kadar uygulamanın uçtan uca akışını gör. Bu bir çalışan mobil arayüz simülasyonudur, gerçek veri işlemez.</p>
+    </div>
+
+    <div class="demo-shell">
+      <div class="tab-list" role="tablist" aria-label="Uygulama ekranları">
+        <button class="tab-btn active" data-screen="login" role="tab" aria-selected="true"><span class="num">01</span> Giriş</button>
+        <button class="tab-btn" data-screen="feed" role="tab" aria-selected="false"><span class="num">02</span> Mahallem</button>
+        <button class="tab-btn" data-screen="report" role="tab" aria-selected="false"><span class="num">03</span> İhbar oluştur</button>
+        <button class="tab-btn" data-screen="history" role="tab" aria-selected="false"><span class="num">04</span> Geçmiş</button>
+        <button class="tab-btn" data-screen="wallet" role="tab" aria-selected="false"><span class="num">05</span> Cüzdan</button>
+        <p class="tab-note">Mahallem'de bir işaretleyiciye dokun, İhbar oluştur'da bir hedef seçip gönder'e bas — kategori kontrolü ve ödül tahmini canlı hesaplanır.</p>
+      </div>
+
+      <div class="phone-stage">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="status-bar"><span>09:41</span><span><i class="ti ti-wifi" aria-hidden="true"></i></span></div>
+
+            <div class="screen active" data-screen="login">
+              <div class="login-body">
+                <div class="app-icon" aria-hidden="true">
+                  <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7C12 7 7 13 7 20.5c0 5 3 9.2 7.3 11 1-6.4 4-11.8 8.4-15.8 2.6-2.5 5.3-4.2 8-5.3-2.7 7.2-8 12.6-14.3 15.2 1.7 1 4 1.6 6.3 1.6 7.7 0 12.9-6 12.9-13.7C35.9 9.6 28.8 7 20 7Z" fill="var(--forest)"/>
+                    <circle cx="14.5" cy="27" r="2" fill="var(--stamp)"/>
+                  </svg>
+                </div>
+                <h3>YeşilİZ</h3>
+                <p>sürdürülebilir mahalle ihbar platformu</p>
+                <button class="egov-btn" id="egovBtn"><i class="ti ti-id-badge-2" aria-hidden="true"></i> e-Devlet ile giriş yap</button>
+                <p class="kvkk-note">kimlik doğrulama e-Devlet üzerinden yapılır, T.C. kimlik numarası saklanmaz</p>
+                <div class="partner-line"><i class="ti ti-building-bank" aria-hidden="true"></i> Çevre Bakanlığı ve belediye ortaklığıyla</div>
+              </div>
+            </div>
+
+            <div class="screen" data-screen="feed">
+              <div class="feed-head"><h3>Mahallem</h3><span class="pill warn">3 açık dosya</span></div>
+              <div class="seg-group">
+                <button class="seg-btn active" data-feedview="mahalle">Mahallem</button>
+                <button class="seg-btn" data-feedview="disari">Başka bir bölge</button>
+              </div>
+
+              <div id="feedMahalle">
+                <div class="map-box" id="mapBox">
+                  <svg class="map-bg" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="150" fill="#E7EEE1"/>
+                    <rect x="0" y="0" width="300" height="150" fill="#DCE6D4"/>
+                    <rect x="0" y="0" width="300" height="46" fill="#CFE0DA"/>
+                    <rect x="8" y="10" width="46" height="26" rx="2" fill="#BFD4CC"/>
+                    <rect x="60" y="6" width="30" height="30" rx="2" fill="#BFD4CC"/>
+                    <rect x="150" y="60" width="52" height="34" rx="3" fill="#CADFC0"/>
+                    <g stroke="#B7C4AC" stroke-width="1">
+                      <rect x="14" y="58" width="34" height="24"/>
+                      <rect x="52" y="58" width="30" height="24"/>
+                      <rect x="14" y="86" width="34" height="22"/>
+                      <rect x="52" y="86" width="30" height="22"/>
+                      <rect x="196" y="16" width="28" height="24"/>
+                      <rect x="228" y="16" width="26" height="24"/>
+                      <rect x="196" y="102" width="30" height="26"/>
+                      <rect x="232" y="102" width="30" height="26"/>
+                      <rect x="266" y="60" width="24" height="20"/>
+                      <rect x="266" y="86" width="24" height="20"/>
+                    </g>
+                    <path d="M0 46 H300" stroke="#F4F1E4" stroke-width="6"/>
+                    <path d="M96 0 V150" stroke="#F4F1E4" stroke-width="7"/>
+                    <path d="M0 112 H300" stroke="#FFFFFF" stroke-width="4"/>
+                    <path d="M188 0 V150" stroke="#FFFFFF" stroke-width="4"/>
+                    <path d="M0 46 H300" stroke="#D8D2B8" stroke-width="1" stroke-dasharray="4 3"/>
+                    <path d="M96 0 V150" stroke="#D8D2B8" stroke-width="1" stroke-dasharray="4 3"/>
+                    <path d="M0 8 L300 130" stroke="#F4F1E4" stroke-width="5" opacity="0.8"/>
+                    <rect x="150" y="60" width="52" height="34" rx="3" fill="none" stroke="#9CB98E" stroke-width="1.5"/>
+                    <path d="M150 74 h52 M176 60 v34" stroke="#9CB98E" stroke-width="1"/>
+                    <path d="M-10 100 C 60 92, 140 130, 310 108" stroke="#9BC2DA" stroke-width="7" fill="none" opacity="0.85"/>
+                    <text x="20" y="30" font-family="IBM Plex Mono, monospace" font-size="7" fill="#5B6B58">ATATÜRK CAD.</text>
+                    <text x="200" y="55" font-family="IBM Plex Mono, monospace" font-size="7" fill="#5B6B58">YILDIZ SK.</text>
+                    <text x="158" y="80" font-family="IBM Plex Mono, monospace" font-size="6.5" fill="#4C6350">MAHALLE PARKI</text>
+                  </svg>
+                  <button class="pin-mark" style="top:28%;left:30%;" data-pin="1" aria-label="Vahşi çöp dökümü"><i class="ti ti-exclamation-mark" aria-hidden="true"></i></button>
+                  <button class="pin-mark" style="top:55%;left:62%;" data-pin="2" aria-label="Su kaçağı"><i class="ti ti-exclamation-mark" aria-hidden="true"></i></button>
+                  <button class="pin-mark" style="top:68%;left:20%;" data-pin="3" aria-label="Kaçak ağaç kesimi"><i class="ti ti-exclamation-mark" aria-hidden="true"></i></button>
+                </div>
+                <div class="pin-detail" id="pinDetail">bir işaretleyiciye dokunarak bugünkü ihbarın niteliğini gör.</div>
+                <p class="feed-list-label">son etkinlik</p>
+                <div class="feed-item">
+                  <i class="ti ti-trash" style="color:var(--stamp)" aria-hidden="true"></i>
+                  <div><p class="title">vahşi çöp dökümü</p><p class="meta">atatürk cad. · doğrulanıyor</p></div>
+                </div>
+                <div class="feed-item">
+                  <i class="ti ti-droplet-off" style="color:#a97417" aria-hidden="true"></i>
+                  <div><p class="title">su kaçağı</p><p class="meta">yıldız sk. · yetkiliye iletildi</p></div>
+                </div>
+                <div class="feed-item">
+                  <i class="ti ti-tree" style="color:var(--forest)" aria-hidden="true"></i>
+                  <div><p class="title">kaçak ağaç kesimi</p><p class="meta">park içi · inceleniyor</p></div>
+                </div>
+              </div>
+
+              <div id="feedDisari" class="other-area" style="display:none;">
+                <p class="hint">Kendi mahallende değil misin? Konumunu yazmana gerek yok — GPS ile bulunduğun yeri otomatik tespit et.</p>
+                <button class="btn small gps-btn" id="otherGpsBtn" style="width:100%;"><i class="ti ti-current-location" aria-hidden="true"></i> <span>GPS ile konumumu tespit et</span></button>
+                <div class="other-preview" id="otherPreview">
+                  <span id="otherPreviewLabel">tespit edilen konum</span>
+                  <span class="mono" id="otherPreviewText">—</span>
+                </div>
+                <button class="btn primary small" id="otherReportBtn" style="width:100%;" disabled>bu bölgeden ihbar oluştur</button>
+              </div>
+
+              <div class="tabbar">
+                <button data-screen="feed"><i class="ti ti-map-2" aria-hidden="true"></i></button>
+                <button data-screen="report"><i class="ti ti-camera-plus" aria-hidden="true"></i></button>
+                <button data-screen="history"><i class="ti ti-history" aria-hidden="true"></i></button>
+                <button data-screen="wallet"><i class="ti ti-wallet" aria-hidden="true"></i></button>
+              </div>
+            </div>
+
+            <div class="screen" data-screen="report">
+              <p class="field-label" style="margin-top:6px;">yeni ihbar</p>
+              <div class="dropzone"><i class="ti ti-camera" aria-hidden="true"></i>fotoğraf çek</div>
+
+              <p class="field-label">sürdürülebilir kalkınma hedefi</p>
+              <div class="cat-grid" id="categoryGrid"></div>
+              <div class="cat-info" id="categoryInfo">bir hedef seç — üzerine bastığında ne kapsadığını burada görürsün. Kararsızsan en alttaki seçeneği kullan.</div>
+
+              <p class="field-label">konum</p>
+              <div class="seg-group">
+                <button class="seg-btn active" data-locmode="current">Bulunduğum yer</button>
+                <button class="seg-btn" data-locmode="other">Başka bir yer</button>
+              </div>
+              <div class="loc-row" id="locCurrentRow"><i class="ti ti-map-pin" aria-hidden="true"></i><span class="mono">otomatik alındı · GPS</span></div>
+              <div id="locOtherWrap" style="display:none;">
+                <button class="btn small gps-btn" id="locGpsBtn" style="width:100%;"><i class="ti ti-current-location" aria-hidden="true"></i> <span>GPS ile tespit et</span></button>
+                <div class="loc-row result" id="locOtherResult" style="display:none;"><i class="ti ti-map-pin" aria-hidden="true"></i><span class="mono" id="locOtherResultText">—</span></div>
+              </div>
+
+              <p class="field-label">bildirim türü</p>
+              <div class="seg-group" id="solvedGroup">
+                <button class="seg-btn active" data-solved="no">sadece bildiriyorum</button>
+                <button class="seg-btn" data-solved="yes">sorunu ben çözdüm</button>
+              </div>
+              <p class="seg-note" id="solvedNote">sadece bildirim için sabit ₺1 tespit ödülü verilir.</p>
+
+              <textarea class="note" placeholder="kısaca açıkla"></textarea>
+              <p class="reward-note" id="rewardNote">sadece ihbar ederse kullanıcıya sabit ₺1 tespit ödülü yatırılır; sorunu kendisi çözerse katkının büyüklüğüne göre yapay zeka ₺1 ile ₺50 arasında bir ödül belirler.</p>
+              <button class="submit-btn" id="submitBtn">gönder</button>
+              <p class="quota-note" id="quotaNote">bugün 4/15 ihbar hakkı kullanıldı</p>
+
+              <div class="stamp-overlay" id="stampOverlay">
+                <div class="stamp-mark" id="stampMark">İNCELEMEYE ALINDI<span class="stamp-sub">kategori kontrol ediliyor</span></div>
+              </div>
+            </div>
+
+            <div class="screen" data-screen="history">
+              <p class="field-label" style="margin-top:6px;">ihbar geçmişim</p>
+              <div class="hist-item">
+                <div class="hi-top"><span class="hi-date">2 Tem</span><span class="pill ok">çözüldü</span></div>
+                <p class="hi-title">vahşi çöp dökümü</p>
+                <p class="hi-tag">Hedef 11 · sürdürülebilir şehirler</p>
+                <p class="hi-reward">ödül: ₺22,00</p>
+              </div>
+              <div class="hist-item">
+                <div class="hi-top"><span class="hi-date">28 Haz</span><span class="pill warn">beklemede</span></div>
+                <p class="hi-title">su kaçağı</p>
+                <p class="hi-tag">Hedef 6 · temiz su ve sanitasyon</p>
+                <p class="hi-reward">tahmini: ₺35,00</p>
+              </div>
+              <div class="hist-item">
+                <div class="hi-top"><span class="hi-date">20 Haz</span><span class="pill bad">reddedildi</span></div>
+                <p class="hi-title">kaçak ağaç kesimi</p>
+                <p class="hi-tag">Hedef 15 · karasal yaşam</p>
+                <p class="hi-reward">kanıt yetersiz · ödül yok</p>
+              </div>
+              <div class="hist-item">
+                <div class="hi-top"><span class="hi-date">10 Haz</span><span class="pill ok">çözüldü</span></div>
+                <p class="hi-title">geri dönüşüm noktası eksikliği</p>
+                <p class="hi-tag">Hedef 12 · sorumlu tüketim</p>
+                <p class="hi-reward">ödül: ₺8,00</p>
+              </div>
+              <div class="tabbar">
+                <button data-screen="feed"><i class="ti ti-map-2" aria-hidden="true"></i></button>
+                <button data-screen="report"><i class="ti ti-camera-plus" aria-hidden="true"></i></button>
+                <button data-screen="history"><i class="ti ti-history" aria-hidden="true"></i></button>
+                <button data-screen="wallet"><i class="ti ti-wallet" aria-hidden="true"></i></button>
+              </div>
+            </div>
+
+            <div class="screen" data-screen="wallet">
+              <p class="field-label" style="margin-top:6px;">çözüm ve ödül</p>
+              <div class="balance-card">
+                <p class="label">bu ay kazanılan</p>
+                <p class="amount">₺47,00</p>
+                <p class="pending">onay bekleyen: ₺<span id="pendingAmount">35</span></p>
+              </div>
+              <div id="ledgerList">
+                <div class="ledger-item">
+                  <i class="ti ti-check" style="color:var(--forest)" aria-hidden="true"></i>
+                  <div><p class="t">çöp toplama kanıtlandı</p><p class="s">Hedef 11 · AI onayı · +₺18,00</p></div>
+                </div>
+                <div class="ledger-item">
+                  <i class="ti ti-clock" style="color:#a97417" aria-hidden="true"></i>
+                  <div><p class="t">su kaçağı · belediye onayı bekleniyor</p><p class="s">Hedef 6 · tahmini ₺35,00</p></div>
+                </div>
+                <div class="ledger-item">
+                  <i class="ti ti-medal" style="color:var(--sage)" aria-hidden="true"></i>
+                  <div><p class="t">mahalle bekçisi rozeti</p><p class="s">12 doğrulanmış çözüm</p></div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <button data-screen="feed"><i class="ti ti-map-2" aria-hidden="true"></i></button>
+                <button data-screen="report"><i class="ti ti-camera-plus" aria-hidden="true"></i></button>
+                <button data-screen="history"><i class="ti ti-history" aria-hidden="true"></i></button>
+                <button data-screen="wallet"><i class="ti ti-wallet" aria-hidden="true"></i></button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="nasil-calisir" class="bordered">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">akış</span>
+      <h2>Bir ihbarın dosya ömrü.</h2>
+      <p>Sıra burada gerçekten önemli — her adım bir öncekinin çıktısına bağlı.</p>
+    </div>
+    <div class="steps">
+      <div class="step-card">
+        <span class="step-num">01</span>
+        <h3>Kimlik doğrulama</h3>
+        <p>e-Devlet üzerinden tek seferlik doğrulama; kimlik numarası saklanmaz, sadece doğrulanmış kullanıcı token'ı alınır.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">02</span>
+        <h3>Hedef seçimi ve bildirim</h3>
+        <p>Fotoğraf, 17 hedeften biri ve konum ile ihbar oluşturulur; emin olunamazsa yapay zeka hedefi kendisi belirler.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">03</span>
+        <h3>Yapay zeka ön incelemesi</h3>
+        <p>İçerik, konum ve kategori uygunluğu kontrol edilir; işin büyüklüğüne göre ₺1–₺50 arası bir ödül tahmini üretilir.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">04</span>
+        <h3>Yetkili onayı ve ödül</h3>
+        <p>Belediye ya da bakanlık dosyayı kapatır; ihbar edene tespit, çözene ayrı bir çözüm ödülü tanımlanır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="guvenlik" class="bordered">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">güvenlik ve mahremiyet</span>
+      <h2>Katılımı kolaylaştır, suistimali zorlaştır.</h2>
+    </div>
+    <div class="safe-grid">
+      <div class="safe-card">
+        <div class="head"><i class="ti ti-id-badge-2" aria-hidden="true"></i><h3>Token tabanlı kimlik</h3></div>
+        <p>T.C. kimlik numarası uygulama tarafında tutulmaz; e-Devlet doğrulamasının sonucu olan anonim bir kullanıcı kimliği kullanılır.</p>
+      </div>
+      <div class="safe-card">
+        <div class="head"><i class="ti ti-clock" aria-hidden="true"></i><h3>Günlük kota</h3></div>
+        <p>Kişi başı günlük 15 ihbar sınırı, tekil konum tekrarı kontrolüyle birlikte çalışır.</p>
+      </div>
+      <div class="safe-card">
+        <div class="head"><i class="ti ti-shield-check" aria-hidden="true"></i><h3>İkinci katman onay</h3></div>
+        <p>Yapay zekanın güven skoru düşük çıkan, kategorisi tartışmalı ya da itiraz edilen dosyalar insana yönlendirilir.</p>
+      </div>
+      <div class="safe-card">
+        <div class="head"><i class="ti ti-map-pin" aria-hidden="true"></i><h3>Bölge dışı bildirim</h3></div>
+        <p>Kullanıcı yalnızca kendi mahallesiyle sınırlı kalmaz; gittiği başka bir bölgedeki durumu da ayrı bir sekmeden bildirebilir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>YeşilİZ — sürdürülebilirlik ihbar ve teşvik platformu konsepti</span>
+    <span class="mono">bu bir hackathon demosudur · gerçek veri işlenmemektedir</span>
+  </div>
+</footer>
+
+<script>
+  var sdgIconB64 = {
+    1: "resimler/1.png",
+    2: "resimler/2.png",
+    3: "resimler/3.png",
+    4: "resimler/4.png",
+    5: "resimler/5.png",
+    6: "resimler/6.png",
+    7: "resimler/7.png",
+    8: "resimler/8.png",
+    9: "resimler/9.png",
+    10: "resimler/10.png",
+    11: "resimler/11.png",
+    12: "resimler/12.png",
+    13: "resimler/13.png",
+    14: "resimler/14.png",
+    15: "resimler/15.png",
+    16: "resimler/16.png",
+    17: "resimler/17.png"
+};
+
+  var goalData = [
+    {num:1, img: sdgIconB64[1], name:'Yoksulluğa son', icon:'ti-coin', color:'#A6402E', desc:'Barınma, temel ihtiyaç ve gelir güvencesiyle ilgili yoksunluk durumlarını kapsar.'},
+    {num:2, img: sdgIconB64[2], name:'Açlığa son', icon:'ti-apple', color:'#C1892A', desc:'Gıdaya erişim, beslenme yetersizliği ve tarımsal sürdürülebilirlik sorunlarını kapsar.'},
+    {num:3, img: sdgIconB64[3], name:'Sağlık ve kaliteli yaşam', icon:'ti-heartbeat', color:'#3E7A4C', desc:'Sağlık hizmetine erişim, hijyen ve halk sağlığı risklerini kapsar.'},
+    {num:4, img: sdgIconB64[4], name:'Nitelikli eğitim', icon:'ti-school', color:'#8A3F63', desc:'Okula erişim, eğitim altyapısı ve eşitsiz eğitim koşullarını kapsar.'},
+    {num:5, img: sdgIconB64[5], name:'Toplumsal cinsiyet eşitliği', icon:'ti-scale', color:'#B23A52', desc:'Cinsiyete dayalı ayrımcılık ve eşit fırsat eksikliğini kapsar.'},
+    {num:6, img: sdgIconB64[6], name:'Temiz su ve sanitasyon', icon:'ti-droplet', color:'#2C7DA0', desc:'Su kaçağı, kirlilik, kanalizasyon ve içme suyu sorunlarını kapsar.'},
+    {num:7, img: sdgIconB64[7], name:'Erişilebilir ve temiz enerji', icon:'ti-bulb', color:'#D4A017', desc:'Enerjiye erişim, verimsiz veya kirli enerji kullanımını kapsar.'},
+    {num:8, img: sdgIconB64[8], name:'İnsana yakışır iş ve büyüme', icon:'ti-briefcase', color:'#8E3A3A', desc:'Kayıt dışı çalışma, güvencesiz istihdam ve işyeri koşullarını kapsar.'},
+    {num:9, img: sdgIconB64[9], name:'Sanayi, yenilikçilik, altyapı', icon:'ti-building-factory', color:'#B5652B', desc:'Bozuk altyapı, sanayi kaynaklı kirlilik ve erişim sorunlarını kapsar.'},
+    {num:10, img: sdgIconB64[10], name:'Eşitsizliklerin azaltılması', icon:'ti-adjustments-horizontal', color:'#7A3E8A', desc:'Bölgesel ve toplumsal eşitsizlikten kaynaklanan mahrumiyetleri kapsar.'},
+    {num:11, img: sdgIconB64[11], name:'Sürdürülebilir şehirler', icon:'ti-building-community', color:'#C1892A', desc:'Çöp, kentsel altyapı, yeşil alan ve şehir yaşamı sorunlarını kapsar.'},
+    {num:12, img: sdgIconB64[12], name:'Sorumlu üretim ve tüketim', icon:'ti-recycle', color:'#6E6B2E', desc:'İsraf, geri dönüşümsüz atık ve sorumsuz tüketimi kapsar.'},
+    {num:13, img: sdgIconB64[13], name:'İklim eylemi', icon:'ti-temperature', color:'#2F4B3C', desc:'Karbon salımı, iklim kaynaklı afet riski ve emisyonları kapsar.'},
+    {num:14, img: sdgIconB64[14], name:'Sudaki yaşam', icon:'ti-fish', color:'#1F6E8C', desc:'Deniz, göl ve akarsu ekosistemlerine verilen zararları kapsar.'},
+    {num:15, img: sdgIconB64[15], name:'Karasal yaşam', icon:'ti-tree', color:'#5C7A63', desc:'Ağaç kesimi, orman tahribatı ve kara ekosistemi kaybını kapsar.'},
+    {num:16, img: sdgIconB64[16], name:'Barış, adalet, güçlü kurumlar', icon:'ti-gavel', color:'#2C4A6E', desc:'Kurumsal şeffaflık, yolsuzluk ve adalete erişim sorunlarını kapsar.'},
+    {num:17, img: sdgIconB64[17], name:'Amaçlar için ortaklıklar', icon:'ti-users-group', color:'#3E2F4B', desc:'Kurumlar arası iş birliği ve veri paylaşımı eksikliklerini kapsar.'}
+  ];
+
+  var reportPins = [
+    {id:1, title:'Vahşi çöp dökümü', goal:11, time:'09:14', status:'inceleniyor', desc:'Boş arsaya bırakılmış ev eşyası ve çöp yığını bildirildi.'},
+    {id:2, title:'Su kaçağı', goal:6, time:'08:40', status:'yetkiliye iletildi', desc:'Kaldırım altından sürekli su sızıntısı gözlemlendi.'},
+    {id:3, title:'Kaçak ağaç kesimi', goal:15, time:'07:55', status:'inceleniyor', desc:'Park sınırındaki üç ağacın kesildiği bildirildi.'}
+  ];
+
+  function goalByNum(n){ return goalData.find(function(g){ return g.num === n; }); }
+
+  var sdgStrip = document.getElementById('sdgStrip');
+  goalData.forEach(function(g){
+    var chip = document.createElement('div');
+    chip.className = 'sdg-chip';
+    chip.title = 'Hedef ' + g.num + ' · ' + g.name;
+    chip.innerHTML = '<img src="' + g.img + '" alt="Hedef ' + g.num + ': ' + g.name + '" loading="lazy">';
+    sdgStrip.appendChild(chip);
+  });
+
+  var selectedCategory = null;
+  var locationMode = 'current';
+  var quotaUsed = 4;
+  var pendingTotal = 35;
+  var submitting = false;
+
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var screens = document.querySelectorAll('.screen');
+
+  function showScreen(name){
+    screens.forEach(function(s){ s.classList.toggle('active', s.dataset.screen === name); });
+    tabBtns.forEach(function(b){
+      var active = b.dataset.screen === name;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active);
+    });
+    document.querySelectorAll('.tabbar i[aria-hidden]').forEach(function(i){
+      var btn = i.closest('button');
+      if(btn){ i.classList.toggle('on', btn.dataset.screen === name); }
+    });
+    if(name === 'report'){ resetReportUI(); }
+  }
+
+  tabBtns.forEach(function(btn){ btn.addEventListener('click', function(){ showScreen(btn.dataset.screen); }); });
+  document.querySelectorAll('.tabbar button[data-screen]').forEach(function(btn){
+    btn.addEventListener('click', function(){ showScreen(btn.dataset.screen); });
+  });
+
+  document.getElementById('egovBtn').addEventListener('click', function(){ showScreen('feed'); });
+
+  document.querySelectorAll('[data-feedview]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('[data-feedview]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var mode = btn.dataset.feedview;
+      document.getElementById('feedMahalle').style.display = mode === 'mahalle' ? 'block' : 'none';
+      document.getElementById('feedDisari').style.display = mode === 'disari' ? 'flex' : 'none';
+    });
+  });
+
+  document.querySelectorAll('.pin-mark').forEach(function(pin){
+    pin.addEventListener('click', function(){
+      document.querySelectorAll('.pin-mark').forEach(function(p){ p.classList.remove('selected'); });
+      pin.classList.add('selected');
+      var data = reportPins.find(function(r){ return r.id === parseInt(pin.dataset.pin, 10); });
+      var g = goalByNum(data.goal);
+      document.getElementById('pinDetail').innerHTML =
+        '<span class="pd-tag">Hedef ' + g.num + ' · ' + g.name + ' · ' + data.time + '</span>' +
+        '<p class="pd-title">' + data.title + '</p>' + data.desc + ' <em>(' + data.status + ')</em>';
+    });
+  });
+
+  var gpsPlaces = [
+    {name:'Nilüfer, Bursa', coord:'40.2160° K, 28.9850° D'},
+    {name:'Osmangazi, Bursa', coord:'40.1950° K, 29.0700° D'},
+    {name:'Yıldırım, Bursa', coord:'40.1930° K, 29.1200° D'},
+    {name:'Görükle, Bursa', coord:'40.2260° K, 28.8570° D'}
+  ];
+  function randomGpsPlace(){ return gpsPlaces[Math.floor(Math.random() * gpsPlaces.length)]; }
+
+  function runGpsDetect(btn, onDone){
+    if(btn.dataset.busy === '1') return;
+    btn.dataset.busy = '1';
+    var icon = btn.querySelector('i');
+    var label = btn.querySelector('span');
+    var origLabel = label.textContent;
+    icon.classList.add('gps-spin');
+    label.textContent = 'konum aranıyor…';
+    btn.disabled = true;
+    setTimeout(function(){
+      var place = randomGpsPlace();
+      icon.classList.remove('gps-spin');
+      label.textContent = origLabel;
+      btn.disabled = false;
+      btn.dataset.busy = '0';
+      onDone(place);
+    }, 1100);
+  }
+
+  var otherGpsBtn = document.getElementById('otherGpsBtn');
+  var otherPreview = document.getElementById('otherPreview');
+  var otherPreviewText = document.getElementById('otherPreviewText');
+  var otherReportBtn = document.getElementById('otherReportBtn');
+  var detectedOtherPlace = null;
+  otherGpsBtn.addEventListener('click', function(){
+    runGpsDetect(otherGpsBtn, function(place){
+      detectedOtherPlace = place;
+      otherPreviewText.textContent = place.name + '  ·  ' + place.coord;
+      otherPreview.classList.add('show');
+      otherReportBtn.disabled = false;
+    });
+  });
+  otherReportBtn.addEventListener('click', function(){
+    var place = detectedOtherPlace || randomGpsPlace();
+    showScreen('report');
+    setLocationMode('other', place);
+  });
+
+  function setLocationMode(mode, prefillPlace){
+    locationMode = mode;
+    document.querySelectorAll('[data-locmode]').forEach(function(b){
+      b.classList.toggle('active', b.dataset.locmode === mode);
+    });
+    document.getElementById('locCurrentRow').style.display = mode === 'current' ? 'flex' : 'none';
+    var otherWrap = document.getElementById('locOtherWrap');
+    otherWrap.style.display = mode === 'other' ? 'block' : 'none';
+    var resultRow = document.getElementById('locOtherResult');
+    var resultText = document.getElementById('locOtherResultText');
+    if(prefillPlace){
+      resultText.textContent = prefillPlace.name + '  ·  ' + prefillPlace.coord;
+      resultRow.style.display = 'flex';
+    } else if(mode === 'other'){
+      resultRow.style.display = 'none';
+    }
+  }
+  document.querySelectorAll('[data-locmode]').forEach(function(btn){
+    btn.addEventListener('click', function(){ setLocationMode(btn.dataset.locmode); });
+  });
+  document.getElementById('locGpsBtn').addEventListener('click', function(){
+    runGpsDetect(document.getElementById('locGpsBtn'), function(place){
+      var resultRow = document.getElementById('locOtherResult');
+      var resultText = document.getElementById('locOtherResultText');
+      resultText.textContent = place.name + '  ·  ' + place.coord;
+      resultRow.style.display = 'flex';
+    });
+  });
+
+  var categoryGrid = document.getElementById('categoryGrid');
+  var categoryInfo = document.getElementById('categoryInfo');
+  goalData.forEach(function(g){
+    var tile = document.createElement('button');
+    tile.className = 'cat-tile';
+    tile.dataset.cat = g.num;
+    tile.setAttribute('aria-label', 'Hedef ' + g.num + ' ' + g.name);
+    tile.innerHTML = '<img src="' + g.img + '" alt="" aria-hidden="true">';
+    categoryGrid.appendChild(tile);
+  });
+  var aiTile = document.createElement('button');
+  aiTile.className = 'cat-tile ai-tile';
+  aiTile.dataset.cat = 'ai';
+  aiTile.innerHTML = '<i class="ti ti-sparkles" aria-hidden="true"></i> emin değilim, AI seçsin';
+  categoryGrid.appendChild(aiTile);
+
+  function selectCategory(val){
+    selectedCategory = val;
+    document.querySelectorAll('.cat-tile').forEach(function(t){
+      t.classList.toggle('selected', t.dataset.cat === String(val));
+    });
+    if(val === 'ai'){
+      categoryInfo.innerHTML = '<p class="ci-title">yapay zeka seçecek</p>fotoğrafını ve açıklamanı inceleyip 17 hedeften en uygununu otomatik atar, sonra sana gösterir.';
+    } else {
+      var g = goalByNum(val);
+      categoryInfo.innerHTML = '<p class="ci-title">Hedef ' + g.num + ' · ' + g.name + '</p>' + g.desc;
+    }
+  }
+  categoryGrid.addEventListener('click', function(e){
+    var tile = e.target.closest('.cat-tile');
+    if(tile){ selectCategory(tile.dataset.cat === 'ai' ? 'ai' : parseInt(tile.dataset.cat, 10)); }
+  });
+
+  var selfSolved = false;
+  var solvedGroup = document.getElementById('solvedGroup');
+  var solvedNote = document.getElementById('solvedNote');
+  solvedGroup.addEventListener('click', function(e){
+    var btn = e.target.closest('.seg-btn');
+    if(!btn) return;
+    selfSolved = btn.dataset.solved === 'yes';
+    solvedGroup.querySelectorAll('.seg-btn').forEach(function(b){ b.classList.toggle('active', b === btn); });
+    solvedNote.textContent = selfSolved
+      ? 'sorunu kendin çözdüysen katkının büyüklüğüne göre ₺1 ile ₺50 arasında bir ödül belirlenir.'
+      : 'sadece bildirim için sabit ₺1 tespit ödülü verilir.';
+  });
+
+  function resetReportUI(){
+    if(submitting) return;
+    selectedCategory = null;
+    document.querySelectorAll('.cat-tile').forEach(function(t){ t.classList.remove('selected'); });
+    categoryInfo.innerHTML = 'bir hedef seç — üzerine bastığında ne kapsadığını burada görürsün. Kararsızsan en alttaki seçeneği kullan.';
+    setLocationMode('current');
+    document.getElementById('locOtherResult').style.display = 'none';
+    selfSolved = false;
+    solvedGroup.querySelectorAll('.seg-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.solved === 'no'); });
+    solvedNote.textContent = 'sadece bildirim için sabit ₺1 tespit ödülü verilir.';
+    var submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'gönder';
+  }
+
+  var submitBtn = document.getElementById('submitBtn');
+  var stampOverlay = document.getElementById('stampOverlay');
+  var stampMark = document.getElementById('stampMark');
+  var quotaNote = document.getElementById('quotaNote');
+  var ledgerList = document.getElementById('ledgerList');
+  var pendingAmountEl = document.getElementById('pendingAmount');
+
+  submitBtn.addEventListener('click', function(){
+    if(submitting) return;
+    submitting = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'gönderildi';
+    quotaUsed = Math.min(quotaUsed + 1, 15);
+    quotaNote.textContent = 'bugün ' + quotaUsed + '/15 ihbar hakkı kullanıldı';
+
+    var useAI = (selectedCategory === null || selectedCategory === 'ai');
+    var finalGoal = useAI ? goalData[Math.floor(Math.random() * goalData.length)] : goalByNum(selectedCategory);
+    var wasSolved = selfSolved;
+    var amount = wasSolved ? (Math.floor(Math.random() * 50) + 1) : 1;
+
+    stampOverlay.classList.add('show');
+    stampMark.innerHTML = 'İNCELEMEYE ALINDI<span class="stamp-sub">kategori kontrol ediliyor</span>';
+
+    setTimeout(function(){
+      var line = useAI ? ('AI SEÇTİ: HEDEF ' + finalGoal.num) : ('HEDEF ' + finalGoal.num + ' İLE UYUMLU');
+      stampMark.innerHTML = line + '<span class="stamp-sub">' + finalGoal.name + '</span>';
+    }, 1300);
+
+    setTimeout(function(){
+      if(wasSolved){
+        stampMark.innerHTML = 'TAHMİNİ ÇÖZÜM ÖDÜLÜ<br>₺' + amount + '<span class="stamp-sub">katkının büyüklüğüne göre AI değerlendirmesi</span>';
+      } else {
+        stampMark.innerHTML = 'TESPİT ÖDÜLÜ<br>₺1<span class="stamp-sub">sadece bildirim için sabit ödül</span>';
+      }
+    }, 2600);
+
+    setTimeout(function(){
+      stampOverlay.classList.remove('show');
+      setTimeout(function(){
+        var item = document.createElement('div');
+        item.className = 'ledger-item';
+        var subtitle = wasSolved
+          ? ('Hedef ' + finalGoal.num + ' · çözüm ödülü · AI tahmini ₺' + amount + ',00')
+          : ('Hedef ' + finalGoal.num + ' · sabit tespit ödülü ₺1,00');
+        item.innerHTML = '<i class="ti ti-clock" style="color:#a97417" aria-hidden="true"></i>' +
+          '<div><p class="t">' + finalGoal.name + ' · onay bekliyor</p>' +
+          '<p class="s">' + subtitle + '</p></div>';
+        ledgerList.insertBefore(item, ledgerList.firstChild);
+        pendingTotal += amount;
+        pendingAmountEl.textContent = pendingTotal;
+        showScreen('wallet');
+        submitting = false;
+      }, 300);
+    }, 3900);
+  });
+</script>
+
+</body>
+</html>
