@@ -102,7 +102,6 @@ The platform is designed to launch simultaneously in the two most active distric
 ## Repository Contents
 
 * `2026 Bursa GDG Hackathon proje-YeşilİZ.pptx`: The official pitch deck presentation used during the hackathon.
-* `1000057813.jpg`: Hackathon participation certificate document.
 * Prototype Source Files: The functional prototype code developed collectively by the team using AI-driven rapid prototyping tools.
 
 ---
@@ -112,6 +111,3 @@ The platform is designed to launch simultaneously in the two most active distric
 * **Project Network:** Turkey Smart and Sustainable Cities Network
 * **Email:** yesiliz.info@gmail.com
 
----
-
-## Hackathon Certificate
